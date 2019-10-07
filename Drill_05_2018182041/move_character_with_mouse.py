@@ -1,5 +1,6 @@
 from pico2d import *
 
+
 KPU_WIDTH, KPU_HEIGHT = 1280, 600
 open_canvas(KPU_WIDTH, KPU_HEIGHT)
 kpu_ground = load_image('KPU_GROUND.png')
