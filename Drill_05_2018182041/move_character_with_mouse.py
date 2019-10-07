@@ -19,9 +19,10 @@ def handle_events():
         elif event.type == SDL_MOUSEMOTION:
             x, y = event.x+35, KPU_HEIGHT - 1 - event.y-45
         elif event.type==SDL_MOUSEBUTTONDOWN:
-            myClick=True
-        elif event.type==SDL_MOUSEBUTTONUP:
             endX, endY = event.x + 20, KPU_HEIGHT - 1 - event.y - 20
+            myClick=True
+        #elif event.type==SDL_MOUSEBUTTONUP:
+
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             running = False
 
@@ -33,37 +34,49 @@ running = True
 x, y = KPU_WIDTH // 2, KPU_HEIGHT // 2
 endX, endY = KPU_WIDTH // 2, KPU_HEIGHT // 2
 myClick=False
-cX=0
-cY=0
-#hide_cursor()
+cX=100
+cY=100
+fx=100
+fy=100
+global dir
+dir=fx-cX
+hide_cursor()
 
 frame=0
 while running:
     clear_canvas()
     kpu_ground.draw(KPU_WIDTH // 2, KPU_HEIGHT // 2)
     myMouse.clip_draw(0, 0, 100, 100, x, y)
+    if dir >= 0:
+        character.clip_draw(frame * 100, 100, 100, 100, cX, cY)
+    else:
+        character.clip_draw(frame * 100, 0, 100, 100, cX, cY)
+    frame = (frame + 1) % 8
     update_canvas()
     while(myClick):
         clear_canvas()
         kpu_ground.draw(KPU_WIDTH // 2, KPU_HEIGHT // 2)
-        character.clip_draw(frame * 100, 100, 100, 100, cX, cY)
         myMouse.clip_draw(0, 0, 100, 100, x, y)
         frame = (frame + 1) % 8
         for i in range(0,100+1,2):
+            dir = fx - cX
             clear_canvas()
             kpu_ground.draw(KPU_WIDTH // 2, KPU_HEIGHT // 2)
             myMouse.clip_draw(0, 0, 100, 100, x, y)
             t = i / 100
             fx = (1 - t) * cX + t * endX
             fy = (1 - t) * cY + t * endY
-            character.clip_draw(frame * 100, 100, 100, 100, fx, fy)
+            if dir>=0:
+                character.clip_draw(frame * 100, 100, 100, 100, fx-20, fy+10)
+            else:
+                character.clip_draw(frame * 100, 0, 100, 100, fx-20, fy+10)
             frame = (frame + 1) % 8
             delay(0.02)
             update_canvas()
 
 
-        cX=endX
-        cY=endY
+        cX=endX-20
+        cY=endY+10
         myClick=False
 
     handle_events()
