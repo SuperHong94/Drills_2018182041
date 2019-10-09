@@ -63,12 +63,14 @@ def draw_curve_3_points(p1, p2, p3):
 
     pass
 
+
 def draw_curve_4_points(p1, p2, p3, p4):
+    ''''
     draw_big_point(p1)
     draw_big_point(p2)
     draw_big_point(p3)
     draw_big_point(p4)
-
+'''
     # draw p1-p2
     for i in range(0, 50, 2):
         t = i / 100
@@ -81,9 +83,9 @@ def draw_curve_4_points(p1, p2, p3, p4):
     for i in range(0, 100, 2):
         t = i / 100
         x = ((-t ** 3 + 2 * t ** 2 - t) * p1[0] + (3 * t ** 3 - 5 * t ** 2 + 2) * p2[0] + (
-                    -3 * t ** 3 + 4 * t ** 2 + t) * p3[0] + (t ** 3 - t ** 2) * p4[0]) / 2
+                -3 * t ** 3 + 4 * t ** 2 + t) * p3[0] + (t ** 3 - t ** 2) * p4[0]) / 2
         y = ((-t ** 3 + 2 * t ** 2 - t) * p1[1] + (3 * t ** 3 - 5 * t ** 2 + 2) * p2[1] + (
-                    -3 * t ** 3 + 4 * t ** 2 + t) * p3[1] + (t ** 3 - t ** 2) * p4[1]) / 2
+                -3 * t ** 3 + 4 * t ** 2 + t) * p3[1] + (t ** 3 - t ** 2) * p4[1]) / 2
         draw_point((x, y))
     draw_point(p3)
 
@@ -95,11 +97,31 @@ def draw_curve_4_points(p1, p2, p3, p4):
         draw_point((x, y))
     draw_point(p4)
 
+def draw_curve_5_points(p1, p2, p3, p4):
+    # draw p1-p2
+
+    # draw p2-p3
+    for i in range(0, 100, 2):
+        t = i / 100
+        x = ((-t ** 3 + 2 * t ** 2 - t) * p1[0] + (3 * t ** 3 - 5 * t ** 2 + 2) * p2[0] + (
+                -3 * t ** 3 + 4 * t ** 2 + t) * p3[0] + (t ** 3 - t ** 2) * p4[0]) / 2
+        y = ((-t ** 3 + 2 * t ** 2 - t) * p1[1] + (3 * t ** 3 - 5 * t ** 2 + 2) * p2[1] + (
+                -3 * t ** 3 + 4 * t ** 2 + t) * p3[1] + (t ** 3 - t ** 2) * p4[1]) / 2
+        draw_point((x, y))
+    draw_point(p3)
+
+def draw_curve_n_points(p1,p2,p3,p4):
+    draw_big_point(p1)
+    draw_big_point(p2)
+    draw_big_point(p3)
+    draw_big_point(p4)
+    while(True):
+        draw_curve_4_points(p1,p2,p3,p4)
+        draw_curve_5_points(p3,p4,p1,p2)
+    pass
+
 
 prepare_turtle_canvas()
-#draw_curve_4_points((-350,-100),(-50,150),(150,-100), (350, 300))
-#draw_curve_3_points((-350,-100),(-50,150),(150,-100))
-#draw_curve_4_points((-300,200),(400,350),(300,-300), (-200, -200))
-draw_curve_3_points((-300,200),(400,350),(300,-300))
-draw_curve_3_points((300,-300), (-200, -200),(-300,200))
+points = [(-300, 200), (400, 350), (300, -300), (-200, -200)]
+draw_curve_n_points(points[0],points[1],points[2],points[3])
 turtle.done()
