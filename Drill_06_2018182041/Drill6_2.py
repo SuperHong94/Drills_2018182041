@@ -111,6 +111,7 @@ def draw_curve_n_points(p):
     for i in range(size):
         draw_big_point(p[i])  # 1
 
+
     while (True):
         draw_curve_4_points(p[0], p[1], p[2], p[3])
         draw_curve_5_points(p[2], p[3], p[4], p[5])
