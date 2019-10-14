@@ -17,8 +17,12 @@ class Ball:
         self.x,self.y=random.randint(0, 700),599
         self.speed=random.randint(3,8)
     def update(self):
-        if(self.y>=90):
-            self.y-=self.speed
+        if(self.ballSize==1):
+            if(self.y>=90):
+                self.y-=self.speed
+        else:
+            if(self.y>=70):
+                self.y-=self.speed
     def draw(self):
         if(self.ballSize==0):
             self.image.clip_draw(0, 0, 50, 50, self.x, self.y)
