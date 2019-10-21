@@ -31,15 +31,22 @@ def handle_events():
     pass
 
 def update():
-
-    clear_canvas()
+    global flag
+    if flag:
+        flag=False
+    else:
+        flag=True
     pass
-
+flag=True
 def draw():
+    global flag
     clear_canvas()
     #image.draw(400,300)
 
-    main_state.draw()
-    image.draw_to_origin(300, 300, 200, 200)
+    main_state.boy.draw()
+    main_state.grass.draw()
+    if flag:
+        image.draw_to_origin(300, 300, 200, 200)
+    delay(0.3)
     update_canvas()
     pass
