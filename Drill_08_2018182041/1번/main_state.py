@@ -30,19 +30,25 @@ class Boy:
     def __init__(self):
         self.x, self.y = 0, 90
         self.frame = 0
-        self.image = load_image('run_animation.png')
+        self.image = load_image('animation_sheet.png')
         self.dir = 1
+        self.direction=False
 
     def update(self):
         self.frame = (self.frame + 1) % 8
         self.x += self.dir
-        if self.x >= 800:
+        if self.x >= 800:  #왼쪽
+            self.direction=True
             self.dir = -1
         elif self.x <= 0:
+            self.direction=False
             self.dir = 1
 
     def draw(self):
-        self.image.clip_draw(self.frame * 100, 0, 100, 100, self.x, self.y)
+        if self.direction:
+            self.image.clip_draw(self.frame * 100, 0, 100, 100, self.x, self.y)  #왼쪽
+        else:
+            self.image.clip_draw(self.frame * 100, 100, 100, 100, self.x, self.y)
 
 
 def enter():

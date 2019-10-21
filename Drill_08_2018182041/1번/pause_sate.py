@@ -25,7 +25,7 @@ def handle_events():
             game_framework.quit()
         else:
             if(event.type,event.key)==(SDL_KEYDOWN,SDLK_p):
-                game_framework.change_state(main_state)
+                game_framework.pop_state()
 
     pass
 
