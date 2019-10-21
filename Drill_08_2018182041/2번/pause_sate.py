@@ -30,6 +30,7 @@ def handle_events():
 
     pass
 
+
 def update():
     global flag
     if flag:
