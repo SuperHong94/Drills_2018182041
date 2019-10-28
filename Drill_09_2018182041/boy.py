@@ -94,7 +94,7 @@ class Dash_state:
         boy.x = clamp(25, boy.x, 800 - 25)
 
     def exit(boy, event):
-        if(boy.dashTimer==100):
+        if(boy.dashTimer==50):
             boy.dashTimer=0
             RunState.enter(boy,event)
         pass
@@ -136,7 +136,7 @@ class Boy:
         self.timer=0
         self.frame=0
         self.dashTimer=0
-        self.dash=3
+        self.dash=2
 
         self.event_que=[]
         self.cur_state=IdleState
