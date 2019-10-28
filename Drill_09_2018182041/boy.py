@@ -31,7 +31,6 @@ class IdleState:
         pass
     @staticmethod
     def do(boy):
-        boy.dashTimer=0
         if boy.dir==1:
             boy.image.clip_draw(boy.frame*100,300,100,100,boy.x,boy.y)
         else:
@@ -79,24 +78,27 @@ class RunState:
 class Dash_state:
     @staticmethod
     def enter(boy, event):
+
         if event == DASH_DOWN:
             pass
         elif event==DASH_UP:
             boy.dashTimer=0
         boy.dir = boy.velocity
+        boy.dashTimer = 0
+        boy.dash=3
 
     @staticmethod
     def do(boy):
-        boy.dashTimer+=1
+        print(boy.dashTimer)
+        if (boy.dashTimer > 300):
+            boy.dash = 1
+        boy.dashTimer += 1
         boy.frame = (boy.frame + 1) % 8
         boy.timer -= 1
         boy.x += boy.velocity*boy.dash
         boy.x = clamp(25, boy.x, 800 - 25)
 
     def exit(boy, event):
-        if(boy.dashTimer==50):
-            boy.dashTimer=0
-            RunState.enter(boy,event)
         pass
 
     @staticmethod
@@ -120,12 +122,6 @@ next_state_table = {
 
 }
 
-
-
-
-
-
-
 class Boy:
 
     def __init__(self):
@@ -136,7 +132,7 @@ class Boy:
         self.timer=0
         self.frame=0
         self.dashTimer=0
-        self.dash=2
+        self.dash=3
 
         self.event_que=[]
         self.cur_state=IdleState
