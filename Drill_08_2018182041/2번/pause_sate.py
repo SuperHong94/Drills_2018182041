@@ -39,6 +39,7 @@ def update():
         flag=True
     pass
 flag=True
+
 def draw():
     global flag
     clear_canvas()

@@ -5,6 +5,7 @@ import os
 from pico2d import *
 
 import game_framework
+import start_state
 import title_state
 import pause_sate
 
@@ -20,7 +21,6 @@ font = None
 class Grass:
     def __init__(self):
         self.image = load_image('grass.png')
-
     def draw(self):
         self.image.draw(400, 30)
 
@@ -33,7 +33,6 @@ class Boy:
         self.image = load_image('animation_sheet.png')
         self.dir = 1
         self.direction=False
-
     def update(self):
         self.frame = (self.frame + 1) % 8
         self.x += self.dir
