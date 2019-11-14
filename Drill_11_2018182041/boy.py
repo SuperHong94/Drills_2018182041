@@ -63,7 +63,7 @@ class IdleState:
         else:
             boy.image.clip_draw(int(boy.frame) * 100, 200, 100, 100, boy.x, boy.y)
 
-
+JumpY=None
 class RunState:
 
     @staticmethod
@@ -78,8 +78,16 @@ class RunState:
         elif event == LEFT_UP:
             boy.velocity += RUN_SPEED_PPS
         elif event == SPACE:
-            Jump_current_time=time.time()
             boy.boyJump = True
+            if boy.boyJump:
+                JumpY = 0
+                while JumpY < 100:
+                    JumpY += 10
+                    boy.y += 10
+                while JumpY > 0:
+                    JumpY -= 10
+                    boy.y -= 10
+                boy.boyJump = False
         boy.dir = clamp(-1, boy.velocity, 1)
 
     @staticmethod
@@ -94,12 +102,6 @@ class RunState:
         boy.frame = (boy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
         boy.x += boy.velocity * game_framework.frame_time
         boy.x = clamp(25, boy.x, 1600 - 25)
-        if boy.boyJump:
-            boy.y += boy.velocity * game_framework.frame_time
-            Jump_frame_time = time.time()-Jump_current_time
-            # frame_rate = 1.0 / frame_time
-            Jump_current_time += Jump_frame_time
-            print(Jump_current_time)
 
     @staticmethod
     def draw(boy):
