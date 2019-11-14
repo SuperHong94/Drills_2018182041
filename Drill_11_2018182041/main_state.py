@@ -40,7 +40,7 @@ def enter():
     game_world.add_object(grass, 0)
 
     global balls
-    balls = [Ball() for i in range(10)]+[BigBall() for i in range(10)]
+    balls = [Ball() for i in range(20)]+[BigBall() for i in range(20)]
     game_world.add_objects(balls, 1)
     # fill here for balls
     global brick
@@ -76,6 +76,10 @@ def handle_events():
 def update():
     for game_object in game_world.all_objects():
         game_object.update()
+    if collide(boy,grass):
+        boy.y+=1
+    if collide(boy,brick):
+        boy.y+=1
 
     for ball in balls:
         if collide(boy,ball):
@@ -85,6 +89,9 @@ def update():
     for ball in balls:
         if collide(grass,ball):
             ball.stop()
+        if collide(ball,brick):
+            ball.stop()
+            ball.x+=brick.fall_speed * game_framework.frame_time*brick.dir
 
 
 

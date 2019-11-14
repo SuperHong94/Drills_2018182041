@@ -17,18 +17,16 @@ ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 8
 
 # Boy Event
-RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, SLEEP_TIMER, SPACE = range(6)
+RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, SLEEP_TIMER, SPACE_DOWN, SPACE_UP = range(7)
 
 key_event_table = {
     (SDL_KEYDOWN, SDLK_RIGHT): RIGHT_DOWN,
     (SDL_KEYDOWN, SDLK_LEFT): LEFT_DOWN,
     (SDL_KEYUP, SDLK_RIGHT): RIGHT_UP,
     (SDL_KEYUP, SDLK_LEFT): LEFT_UP,
-    (SDL_KEYDOWN, SDLK_SPACE): SPACE
+    (SDL_KEYDOWN, SDLK_SPACE): SPACE_DOWN,
+    (SDL_KEYUP, SDLK_SPACE): SPACE_UP
 }
-
-Jump_frame_time = 0.0
-Jump_current_time=0.0
 # Boy States
 
 class IdleState:
@@ -43,6 +41,12 @@ class IdleState:
             boy.velocity -= RUN_SPEED_PPS
         elif event == LEFT_UP:
             boy.velocity += RUN_SPEED_PPS
+        elif event == SPACE_DOWN:
+            boy.JumpState=True
+            boy.fallSpeed += RUN_SPEED_PPS * 4
+        elif event == SPACE_UP:
+            boy.JumpState = False
+            boy.fallSpeed -= RUN_SPEED_PPS * 4
         boy.timer = 1000
 
     @staticmethod
@@ -55,6 +59,8 @@ class IdleState:
         boy.timer -= 1
         if boy.timer == 0:
             boy.add_event(SLEEP_TIMER)
+        boy.y += boy.fallSpeed * game_framework.frame_time
+        boy.y -= 1
 
     @staticmethod
     def draw(boy):
@@ -63,12 +69,11 @@ class IdleState:
         else:
             boy.image.clip_draw(int(boy.frame) * 100, 200, 100, 100, boy.x, boy.y)
 
-JumpY=None
+
 class RunState:
 
     @staticmethod
     def enter(boy, event):
-        global current_time
         if event == RIGHT_DOWN:
             boy.velocity += RUN_SPEED_PPS
         elif event == LEFT_DOWN:
@@ -77,17 +82,11 @@ class RunState:
             boy.velocity -= RUN_SPEED_PPS
         elif event == LEFT_UP:
             boy.velocity += RUN_SPEED_PPS
-        elif event == SPACE:
-            boy.boyJump = True
-            if boy.boyJump:
-                JumpY = 0
-                while JumpY < 100:
-                    JumpY += 10
-                    boy.y += 10
-                while JumpY > 0:
-                    JumpY -= 10
-                    boy.y -= 10
-                boy.boyJump = False
+        elif event == SPACE_DOWN:
+            boy.fallSpeed += RUN_SPEED_PPS * 4
+        elif event == SPACE_UP:
+            boy.fallSpeed -= RUN_SPEED_PPS * 4
+
         boy.dir = clamp(-1, boy.velocity, 1)
 
     @staticmethod
@@ -96,12 +95,14 @@ class RunState:
 
     @staticmethod
     def do(boy):
-        global Jump_frame_time
-        global Jump_current_time
         # boy.frame = (boy.frame + 1) % 8
         boy.frame = (boy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
         boy.x += boy.velocity * game_framework.frame_time
         boy.x = clamp(25, boy.x, 1600 - 25)
+        boy.y += boy.fallSpeed * game_framework.frame_time
+        boy.y -=1
+        # print(boy.velocity * game_framework.frame_time)
+        print(boy.JumpState)
 
     @staticmethod
     def draw(boy):
@@ -135,11 +136,14 @@ class SleepState:
                                           boy.y - 25, 100, 100)
 
 
+
 next_state_table = {
     IdleState: {RIGHT_UP: RunState, LEFT_UP: RunState, RIGHT_DOWN: RunState, LEFT_DOWN: RunState,
-                SLEEP_TIMER: SleepState, SPACE: RunState},
-    RunState: {RIGHT_UP: IdleState, LEFT_UP: IdleState, LEFT_DOWN: IdleState, RIGHT_DOWN: IdleState, SPACE: RunState},
-    SleepState: {LEFT_DOWN: RunState, RIGHT_DOWN: RunState, LEFT_UP: RunState, RIGHT_UP: RunState, SPACE: RunState}
+                SLEEP_TIMER: SleepState, SPACE_DOWN: IdleState, SPACE_UP: IdleState},
+    RunState: {RIGHT_UP: IdleState, LEFT_UP: IdleState, LEFT_DOWN: IdleState, RIGHT_DOWN: IdleState, SPACE_UP: RunState,
+               SPACE_DOWN: RunState},
+    SleepState: {LEFT_DOWN: RunState, RIGHT_DOWN: RunState, LEFT_UP: RunState, RIGHT_UP: RunState,
+                 SPACE_DOWN: IdleState, SPACE_UP: IdleState}
 }
 
 
@@ -156,11 +160,12 @@ class Boy:
         self.event_que = []
         self.cur_state = IdleState
         self.cur_state.enter(self, None)
-        self.boyJump = False
+        self.JumpState = False
+        self.fallSpeed = 0
 
     def get_bb(self):
         # fill here
-        return self.x - 50, self.y - 50, self.x + 50, self.y + 50
+        return self.x - 20, self.y - 35, self.x + 20, self.y + 40
 
     def add_event(self, event):
         self.event_que.insert(0, event)

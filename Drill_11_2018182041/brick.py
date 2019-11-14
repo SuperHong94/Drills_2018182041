@@ -8,7 +8,7 @@ class Brick:
     def __init__(self):
         if Brick.image == None:
             Brick.image = load_image('brick180x40.png')
-        self.x, self.y, self.fall_speed = random.randint(0, 1600-1), 200,500
+        self.x, self.y, self.fall_speed = random.randint(0, 1600-1), 200,200
         self.dir=1
 
     def get_bb(self):
