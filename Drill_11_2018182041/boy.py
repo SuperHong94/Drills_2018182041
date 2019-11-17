@@ -43,10 +43,10 @@ class IdleState:
             boy.velocity += RUN_SPEED_PPS
         elif event == SPACE_DOWN:
             boy.JumpState=True
-            boy.fallSpeed += RUN_SPEED_PPS * 4
+            boy.fallSpeed += RUN_SPEED_PPS * 2
         elif event == SPACE_UP:
             boy.JumpState = False
-            boy.fallSpeed -= RUN_SPEED_PPS * 4
+            boy.fallSpeed -= RUN_SPEED_PPS * 2
         boy.timer = 1000
 
     @staticmethod
@@ -83,9 +83,9 @@ class RunState:
         elif event == LEFT_UP:
             boy.velocity += RUN_SPEED_PPS
         elif event == SPACE_DOWN:
-            boy.fallSpeed += RUN_SPEED_PPS * 4
+            boy.fallSpeed += RUN_SPEED_PPS * 2
         elif event == SPACE_UP:
-            boy.fallSpeed -= RUN_SPEED_PPS * 4
+            boy.fallSpeed -= RUN_SPEED_PPS * 2
 
         boy.dir = clamp(-1, boy.velocity, 1)
 
