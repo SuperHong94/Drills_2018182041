@@ -40,6 +40,7 @@ class Zombie:
         self.patrol_order=1
         self.target_x,self.target_y=None,None
         self.x,self.y=self.patrol_positions[0]
+        self.font = load_font('ENCR10B.TTF', 16)
 
         self.load_images()
         self.dir = random.random()*2*math.pi # random moving direction
@@ -47,6 +48,7 @@ class Zombie:
         self.timer = 1.0 # change direction every 1 sec when wandering
         self.frame = 0
         self.build_behavior_tree()
+        self.HP=500
 
     def calculate_current_position(self):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
@@ -146,6 +148,8 @@ class Zombie:
                 Zombie.images['Idle'][int(self.frame)].draw(self.x, self.y, 100, 100)
             else:
                 Zombie.images['Walk'][int(self.frame)].draw(self.x, self.y, 100, 100)
+        draw_rectangle(*self.get_bb())
+        self.font.draw(self.x - 50, self.y + 50, '(HP: %d)' % self.HP, (255, 255, 255))
 
     def handle_event(self, event):
         pass
