@@ -69,37 +69,22 @@ class Zombie:
         # fill here
         boy = main_state.get_boy()
         distance = (boy.x - self.x) ** 2 + (boy.y - self.y) ** 2
+        if distance < (PIXEL_PER_METER * 10) ** 2:
+            self.dir = math.atan2(boy.y - self.y, boy.x - self.x)
 
-        if boy.HP<self.HP:
-            if distance < (PIXEL_PER_METER * 10) ** 2:
-                self.dir = math.atan2(boy.y - self.y, boy.x - self.x)
-                return BehaviorTree.SUCCESS
-            else:
-                self.speed = 0
-                return BehaviorTree.FAIL
+            return BehaviorTree.SUCCESS
         else:
+            self.speed = 0
             return BehaviorTree.FAIL
-
         pass
-    def find_player_for_run(self):
-        boy = main_state.get_boy()
-        distance = (boy.x - self.x) ** 2 + (boy.y - self.y) ** 2
-        if boy.HP >self.HP:
-            if distance > (PIXEL_PER_METER * 10) ** 2:
-                self.dir = math.atan2(boy.y - self.y, boy.x - self.x)
-                return BehaviorTree.SUCCESS
-            else:
-                self.speed = 0
-                return BehaviorTree.FAIL
-        else:
-            return BehaviorTree.FAIL
-
     def find_ball(self):
         # fill here
         balls = [*main_state.get_ball()]
+        min=10000
         for ball in balls:
             distance = (ball.x - self.x) ** 2 + (ball.y - self.y) ** 2
             if distance < (PIXEL_PER_METER * 10) ** 2:
+                self.target_x, self.target_y =self.x,self.y
                 self.dir = math.atan2(ball.y - self.y, ball.x - self.x)
                 return BehaviorTree.SUCCESS
             else:
@@ -109,16 +94,27 @@ class Zombie:
 
     def move_to_player(self):
         # fill here
-        self.speed = RUN_SPEED_PPS
+        boy = main_state.get_boy()
+        if boy.HP<self.HP:
+            self.speed = RUN_SPEED_PPS
+        else:
+            self.speed = -RUN_SPEED_PPS
         self.calculate_current_position()
         return BehaviorTree.SUCCESS
         pass
 
     def move_to_ball(self):
         # fill here
+        print("dkdkdkd")
         self.speed = RUN_SPEED_PPS*2
         self.calculate_current_position()
-        return BehaviorTree.SUCCESS
+        distance = (self.target_x - self.x) ** 2 + (self.target_y - self.y) ** 2
+        if distance < PIXEL_PER_METER ** 2:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
+        return BehaviorTree.RUNNING
+
         pass
 
     def get_next_position(self):
@@ -160,20 +156,15 @@ class Zombie:
         # wander_chase_node.add_children(chase_node,wander_node)
         # self.bt=BehaviorTree(wander_chase_node)
         wander_node = LeafNode("Wander", self.wander)
-        find_player_node = SequenceNode("Find Player")
+        find_player_node = LeafNode("Find Player",self.find_player)
         find_ball_node = LeafNode("Find Ball", self.find_ball)
         move_to_player_node = LeafNode("Move to Player", self.move_to_player)
         move_to_ball_node = LeafNode("Move to Ball", self.move_to_ball)
         zombieAI_node = SelectorNode("ZombieAI")
-        chase_or_runAway_node = SelectorNode("COR")
+        chase_or_runAway_node = SequenceNode("COR")
         chase_ball_node = SequenceNode("Chase Ball")
-        find_player_for_run_node=SequenceNode("Find Player for Run")
         zombieAI_node.add_children(chase_or_runAway_node, chase_ball_node, wander_node)
-        chase_or_runAway_node.add_children(find_player_node, find_player_for_run_node)
-        find_player_for_run_node.add_child(move_to_player_node)
-        find_player_node.add_child(move_to_player_node)
-
-
+        chase_or_runAway_node.add_children(find_player_node, move_to_player_node)
 
         #공찾기 좀비
         chase_ball_node.add_children(find_ball_node, move_to_ball_node)
