@@ -115,6 +115,7 @@ class Boy:
         self.cur_state = WalkingState
         self.cur_state.enter(self, None)
         self.HP=0
+        self.draw_bool=True
 
     def get_bb(self):
         # fill here
@@ -133,11 +134,12 @@ class Boy:
             self.cur_state.enter(self, event)
 
     def draw(self):
-        self.cur_state.draw(self)
-        self.font.draw(self.x - 50, self.y + 50, '(HP: %d)' % self.HP, (255, 255, 255))
-        #fill here
-        draw_rectangle(*self.get_bb())
-        #debug_print('Velocity :' + str(self.velocity) + '  Dir:' + str(self.dir) + ' Frame Time:' + str(game_framework.frame_time))
+        if self.draw_bool:
+            self.cur_state.draw(self)
+            self.font.draw(self.x - 50, self.y + 50, '(HP: %d)' % self.HP, (255, 255, 255))
+            #fill here
+            draw_rectangle(*self.get_bb())
+            #debug_print('Velocity :' + str(self.velocity) + '  Dir:' + str(self.dir) + ' Frame Time:' + str(game_framework.frame_time))
 
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:
