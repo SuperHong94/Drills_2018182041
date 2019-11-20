@@ -31,23 +31,20 @@ class Zombie:
                 Zombie.images[name] = [load_image("./zombiefiles/female/"+ name + " (%d)" % i + ".png") for i in range(1, 11)]
 
     def __init__(self):
-        #self.x, self.y = 1280 / 4 * 3, 1024 / 4 * 3
+        self.x, self.y = 1280 / 4 * 3, 1024 / 4 * 3
 
-        positions=[(43, 750),(1118, 750),(1050, 530),(575, 220),(235, 33), (575,220),(1050, 530), (1118,750)]
-        self.patrol_positions=[]
-        for p in positions:
-            self.patrol_positions.append((p[0],1024-p[1]))
-        self.patrol_order=1
-        self.target_x,self.target_y=None,None
-        self.x,self.y=self.patrol_positions[0]
-        self.font = load_font('ENCR10B.TTF', 16)
+
+        self.target_x, self.target_y = None, None
+
 
         self.load_images()
-        self.dir = random.random()*2*math.pi # random moving direction
+        self.dir = random.random() * 2 * math.pi  # random moving direction
         self.speed = 0
-        self.timer = 1.0 # change direction every 1 sec when wandering
+        self.timer = 1.0  # change direction every 1 sec when wandering
         self.frame = 0
         self.build_behavior_tree()
+        self.font = load_font('ENCR10B.TTF', 16)
+
         self.HP=500
 
     def calculate_current_position(self):
@@ -59,6 +56,7 @@ class Zombie:
 
     def wander(self):
         # fill here
+
         self.speed=RUN_SPEED_PPS
         self.calculate_current_position()
         self.timer-=game_framework.frame_time
@@ -79,8 +77,25 @@ class Zombie:
             self.speed=0
             return BehaviorTree.FAIL
         pass
+    def find_ball(self):
+        # fill here
+        ball=main_state.get_ball()
+        distance=(ball.x-self.x)**2+(ball.y-self.y)**2
+        if distance<(PIXEL_PER_METER*5)**2:
+            self.dir=math.atan2(ball.y-self.y,ball.x-self.x)
+            return BehaviorTree.SUCCESS
+        else:
+            self.speed=0
+            return BehaviorTree.FAIL
+        pass
 
     def move_to_player(self):
+        # fill here
+        self.speed=RUN_SPEED_PPS
+        self.calculate_current_position()
+        return BehaviorTree.SUCCESS
+        pass
+    def move_to_ball(self):
         # fill here
         self.speed=RUN_SPEED_PPS
         self.calculate_current_position()
@@ -105,23 +120,46 @@ class Zombie:
         else:
             return BehaviorTree.RUNNING
         pass
+    # def runAway_to_player(self):
+    #     self.speed=RUN_SPEED_PPS
+    #     self.calculate_current_position()
+    #     distance=(self.target_x-self.x)**2+(self.target_y-self.y)**2
+    #     if distance>PIXEL_PER_METER**2:
+    #         return BehaviorTree.SUCCESS
+    #     else:
+    #         return BehaviorTree.RUNNING
 
     def build_behavior_tree(self):
         # fill here
-        wander_node=LeafNode("Wander",self.wander)
+
         # self.bt=BehaviorTree(wander_node)
         # get_next_position_node=LeafNode("Get Next Position",self.get_next_position)
         # move_to_target_node=LeafNode("Move to Target",self.move_to_target)
         # patrol_node=SequenceNode("Patrol")
         # patrol_node.add_children(get_next_position_node,move_to_target_node)
         # self.bt=BehaviorTree(patrol_node)
+
+        # find_player_node=LeafNode("Find Player",self.find_player)
+        # move_to_player_node=LeafNode("Move to Player",self.move_to_player)
+        # chase_node=SequenceNode("Chase")
+        # chase_node.add_children(find_player_node,move_to_player_node)
+        # wander_chase_node=SelectorNode("WanderCahse")
+        # wander_chase_node.add_children(chase_node,wander_node)
+        # self.bt=BehaviorTree(wander_chase_node)
+        wander_node = LeafNode("Wander", self.wander)
         find_player_node=LeafNode("Find Player",self.find_player)
+        # find_ball_node=LeafNode("Find Ball",self.find_ball)
         move_to_player_node=LeafNode("Move to Player",self.move_to_player)
-        chase_node=SequenceNode("Chase")
-        chase_node.add_children(find_player_node,move_to_player_node)
-        wander_chase_node=SelectorNode("WanderCahse")
-        wander_chase_node.add_children(chase_node,wander_node)
-        self.bt=BehaviorTree(wander_chase_node)
+        #move_to_ball_node=LeafNode("Move to Player",self.move_to_ball)
+        zombieAI_node=SelectorNode("ZombieAI")
+        chase_or_runAway_node=SequenceNode("COR")
+        chase_ball_node=SequenceNode("Chase Ball")
+        zombieAI_node.add_children(chase_or_runAway_node,wander_node)
+        chase_or_runAway_node.add_children(find_player_node,move_to_player_node)
+
+        #chase_ball_node.add_children(find_ball_node,move_to_ball_node)
+        self.bt=BehaviorTree(zombieAI_node)
+
 
         pass
 
